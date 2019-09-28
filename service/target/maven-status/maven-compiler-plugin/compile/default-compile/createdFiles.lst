@@ -1,0 +1,4 @@
+com\app\service\CustomerService.class
+com\app\service\PurchaseService.class
+com\app\service\ControlService.class
+com\app\service\ProductService.class

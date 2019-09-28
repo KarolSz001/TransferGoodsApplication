@@ -1,0 +1,14 @@
+[
+  {
+    "name": "TV",
+    "quantity": 2,
+    "price": 209,
+    "category": "AGD"
+  },
+  {
+    "name": "WATCH",
+    "quantity": 15,
+    "price": 179,
+    "category": "ELECTRONICS"
+  }
+]

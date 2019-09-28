@@ -1,0 +1,4 @@
+com\app\converter\ProductToJsonConverter.class
+com\app\converter\CutomerToJsonConverter.class
+com\app\converter\JsonConverter.class
+com\app\converter\PreferancesToJsonConverter.class

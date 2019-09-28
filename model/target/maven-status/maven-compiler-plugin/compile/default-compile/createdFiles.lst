@@ -1,0 +1,6 @@
+com\app\model\Product.class
+com\app\model\Preference$PreferenceBuilder.class
+com\app\model\Customer.class
+com\app\model\Customer$CustomerBuilder.class
+com\app\model\Preference.class
+com\app\model\Product$ProductBuilder.class
