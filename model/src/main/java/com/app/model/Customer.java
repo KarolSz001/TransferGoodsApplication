@@ -1,9 +1,6 @@
 package com.app.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 
@@ -17,6 +14,8 @@ public class Customer {
     private String name;
     private String surname;
     private int age;
-    private BigDecimal cash;
     private int preferences;
+    @EqualsAndHashCode.Exclude
+    private BigDecimal cash;
+
 }
