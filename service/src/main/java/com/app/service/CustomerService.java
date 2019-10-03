@@ -14,23 +14,27 @@ public class CustomerService {
     private final List<Preference> preferences;
     private final String jsonCustomerFile = "jsonCustomer.json";
     private final String jsonPreferenceFile = "jsonFilePreferences.json";
+    private final CutomerToJsonConverter cutomerToJsonConverter = new CutomerToJsonConverter(jsonCustomerFile);
+    private final PreferencesToJsonConverter preferencesToJsonConverter = new PreferencesToJsonConverter(jsonPreferenceFile);
 
     public CustomerService() {
-        customers = loadCustomersFromJsonFile(jsonCustomerFile);
-        preferences = loadPreferencesFromJsonFile(jsonPreferenceFile);
+        customers = loadCustomersFromJsonFile();
+        preferences = loadPreferencesFromJsonFile();
     }
 
-    public List<Customer> loadCustomersFromJsonFile(String fileName){
-        CutomerToJsonConverter cutomerToJsonConverter = new CutomerToJsonConverter(fileName);
+    public List<Customer> loadCustomersFromJsonFile(){
         return cutomerToJsonConverter.fromJson().orElseThrow(()-> new MyUncheckedException("LOAD CUSTOMER ERROR"));
     }
-    public List<Preference> loadPreferencesFromJsonFile(String filename){
-        PreferencesToJsonConverter preferencesToJsonConverter = new PreferencesToJsonConverter(filename);
+    public List<Preference> loadPreferencesFromJsonFile(){
         return preferencesToJsonConverter.fromJson().orElseThrow(()-> new MyUncheckedException("LOAD PREFERENCES ERROR"));
+    }
+    public void saveCustomersToJsonFile(){
+        cutomerToJsonConverter.toJson(customers);
     }
 
     public List<Customer> getAllCustomers(){
         return customers;
     }
+
     public List<Preference> getPreferences(){return preferences;}
 }

@@ -1,14 +1,14 @@
 [
   {
     "name": "TV",
-    "quantity": 19,
-    "price": 31,
+    "quantity": 26,
+    "price": 261,
     "category": "AGD"
   },
   {
     "name": "WATCH",
-    "quantity": 98,
-    "price": 385,
+    "quantity": 33,
+    "price": 148,
     "category": "ELECTRONICS"
   }
 ]

@@ -23,6 +23,9 @@ public class DataProductGenerator {
         products = createStoreProducts();
         writeStoreToJsonFile(products);
     }
+    public DataProductGenerator(String fileName){
+
+    }
 
     public List<Product> getProducts() {
         return products;

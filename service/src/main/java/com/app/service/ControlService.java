@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 
 public class ControlService {
 
+    private DataProductGenerator dataProductGenerator;
+    private DataCustomerGenerator dataCustomerGenerator;
+    private DataPreferencesGenerator dataPreferencesGenerator;
     private final PurchaseService purchaseService;
     private final CustomerService customerService;
 
@@ -23,21 +26,23 @@ public class ControlService {
     public void controlRun() {
         printDataFromJsonFiles();
         purchaseOperation();
-//        findResults();
+        findResults();
     }
 
+
+
     private void printDataFromJsonFiles() {
-        System.out.println("\n>>>>>>>>>>CUSTOMERS DATA>>>>>>>>>>");
+        System.out.println("\n>>>>>>>>>> CUSTOMERS DATA >>>>>>>>>>");
         customerService.getAllCustomers().forEach(System.out::println);
-        System.out.println("\n>>>>>>>>>>PRODUCTS DATA>>>>>>>>>>");
+        System.out.println("\n>>>>>>>>>> PRODUCTS DATA >>>>>>>>>>");
         purchaseService.getProductService().findAll().forEach(System.out::println);
-        System.out.println("\n>>>>>>>>>>PREFERENCES DATA>>>>>>>>>>");
+        System.out.println("\n>>>>>>>>>> PREFERENCES DATA >>>>>>>>>>");
         customerService.getPreferences().forEach(System.out::println);
     }
 
     private void findResults() {
         System.out.println("View customer data that purchased the most products");
-        purchaseService.getCustomerHowPurchasedMostProducts();
+        System.out.println(purchaseService.getCustomerHowPurchasedMostProducts());
         DataManager.getLine("\n PRESS ANY NUMBER TO CONTINUE");
         System.out.println("View customer data that has purchased products about Total values");
         System.out.println(purchaseService.findCustomerHowPurchasedMostProductsWithTotalValue());
@@ -60,23 +65,12 @@ public class ControlService {
     }
 
     private void initialisationData() {
-        System.out.println("\n >>>>>>>>>>DATA INITIALIZATION OPERATION>>>>>>>>>>");
-        productsInit();
-        customersInit();
-        preferencesInit();
+        System.out.println("\n >>>>>>>>>> DATA INITIALIZATION OPERATION >>>>>>>>>>");
+        dataProductGenerator = new DataProductGenerator();
+        dataCustomerGenerator = new DataCustomerGenerator();
+        dataPreferencesGenerator = new DataPreferencesGenerator();
     }
 
-    private void productsInit() {
-        DataProductGenerator dataProductGenerator = new DataProductGenerator();
-    }
-
-    private void customersInit() {
-        DataCustomerGenerator dataCustomerGenerator = new DataCustomerGenerator();
-    }
-
-    private void preferencesInit() {
-        DataPreferencesGenerator dataPreferencesGenerator = new DataPreferencesGenerator();
-    }
 
 }
 

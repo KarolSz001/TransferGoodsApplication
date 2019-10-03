@@ -15,22 +15,47 @@ public class PurchaseService {
 
     private final Integer firstCategory = 0;
     private final Integer secondCategory = 1;
-    private final ProductService productService;
-    private final CustomerService customerService;
+    private final ProductService productService = new ProductService();
+    private final CustomerService customerService = new CustomerService();
     private final Map<Customer, List<Product>> customerProductsMap = new HashMap<>();
+    private int count = 0;
 
     public PurchaseService() {
-        customerService = new CustomerService();
-        productService = new ProductService();
+        customerService.loadCustomersFromJsonFile();
+        productService.loadProductsFromJsonFile();
     }
 
     public ProductService getProductService() {
         return productService;
     }
 
+    private void saveProductsToJsonFile() {
+        productService.saveProductsToJsonFile();
+    }
+
+    private void saveCustomerDataToJsonFile() {
+        customerService.saveCustomersToJsonFile();
+    }
+
+    private void saveDataToJsonFiles() {
+        System.out.println("\n:::::::::::::::: SAVE FILES ::::::::::::::::::::::");
+        saveProductsToJsonFile();
+        saveCustomerDataToJsonFile();
+    }
+    private void printAllUpData(){
+        printAllCustomersAfterOperation();
+        printAllProductsAfterOperation();
+    }
+
+    private void printAllCustomersAfterOperation(){
+        customerService.getAllCustomers().forEach(System.out::println);
+    }
+    private void printAllProductsAfterOperation(){
+        productService.findAll().forEach(System.out::println);
+    }
 
     public void purchaseGoodsByCustomer(Customer customer) {
-
+        count++;
         System.out.println("------------------------------------------------------------------------------------------");
         List<Category> customerPrefs = getCustomerPrefCategories(customer);
         System.out.println("\n WELCOME CUSTOMER ----->>>>" + customer.getName() + ":::::" + customer.getSurname() + " ::::: PREFERENCES -> " + customer.getPreferences() + " ----> " + customerPrefs + "::::::::" + customer.getCash() + " PLN");
@@ -43,11 +68,15 @@ public class PurchaseService {
         selectedProduct = selectProductFromCategory(customerPrefs, secondCategory);
         System.out.println(selectedProduct);
         purchaseProduct(selectedProduct, customer);
+        if (count == 2) {
+            printAllUpData();
+            saveDataToJsonFiles();
+            count = 0;
+        }
     }
 
     private void purchaseProduct(Product product, Customer customer) {
         List<Product> products = customerProductsMap.get(customer);
-//        System.out.println(products);
         int quantityOfTheProduct = DataManager.getInt2("\n >>>>>>>>>> PRESS NUMBER OF PRODUCT YOU WANNA BUY <<<<<<<< ");
         BigDecimal totalPriceOfBuyingProduct = product.getPrice().multiply(new BigDecimal(quantityOfTheProduct));
         BigDecimal rest = calcRestOfMoney(totalPriceOfBuyingProduct, customer.getCash());
@@ -60,7 +89,6 @@ public class PurchaseService {
             System.out.println(" >>>>>>>>>> YOU HAVE NO ENOUGH MONEY TO BUY THIS PRODUCT FOR THIS CATEGORY, WE DONE TODAY >>>>>>>>>> ");
             return;
         }
-
         try {
             Product copyProduct = (Product) product.clone();
             copyProduct.setQuantity(quantityOfTheProduct);
@@ -72,6 +100,7 @@ public class PurchaseService {
         System.out.println(" Payment Accepted ");
         removeProductFromStore(product, quantityOfTheProduct);
         customerProductsMap.entrySet().stream().filter(f -> f.getKey().equals(customer)).findFirst().get().getKey().setCash(rest);
+        customerService.getAllCustomers().stream().filter(f -> f.equals(customer)).findFirst().get().setCash(rest);// for save file with update
         System.out.println("\n UPDATE CUSTOMER DATA ---->>>>" + customerProductsMap.entrySet().stream().filter(f -> f.getKey().equals(customer)).collect(Collectors.toList()));
     }
 
@@ -82,8 +111,7 @@ public class PurchaseService {
 
     private Product selectProductFromCategory(List<Category> categories, int categoryNumber) {
         System.out.println("\n>>>>>>>>>>AUTO SELECTED PRODUCT BY NUMBER " + (categoryNumber + 1) + " CATEGORY -->>RATIO PRICE/QUANTITY <<<<--- " + categories.get(categoryNumber));
-        Product result = getListFromCategory(categories.get(categoryNumber)).stream().max(Comparator.comparing(c -> c.getPrice().subtract(BigDecimal.valueOf(c.getQuantity())))).get();
-        return result;
+        return getListFromCategory(categories.get(categoryNumber)).stream().max(Comparator.comparing(c -> c.getPrice().subtract(BigDecimal.valueOf(c.getQuantity())))).get();
     }
 
     private BigDecimal calcRestOfMoney(BigDecimal productPrice, BigDecimal customerMoney) {
@@ -102,7 +130,6 @@ public class PurchaseService {
             productService.findAll().forEach(System.out::println);
         }
     }
-
 
     private List<Product> getProductFromCustomerPreferences(List<Category> preferences) {
         List<Product> filteredListByPreference = new ArrayList<>();
@@ -137,7 +164,6 @@ public class PurchaseService {
      */
 
     public Customer getCustomerHowPurchasedMostProducts() {
-
         return customerProductsMap.entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
