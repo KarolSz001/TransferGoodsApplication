@@ -9,6 +9,7 @@ import com.app.utility.DataManager;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class PurchaseService {
@@ -189,50 +190,60 @@ public class PurchaseService {
 
     /**
      * Method return Map of products with numbers of selecting them
-     * return Map<Product, Integer>
+     * return Map<Product, Long>
      */
 
     public Map<Product, Integer> getMapWithProductAndNumbersSelectingThem() {
-        return customerProductsMap.entrySet().stream().flatMap(f -> f.getValue().stream()).collect(Collectors.groupingBy(g -> g))
-                .entrySet()
-                .stream()
+        return customerProductsMap.entrySet().stream()
+                .flatMap(f -> f.getValue().stream())
                 .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        e -> e.getValue().size()
+                        Function.identity(),
+                        Product::getQuantity,
+                        Integer::sum,
+                        LinkedHashMap::new
                 ));
+
+
     }
 
     /**
      * Method return Product which was most often selected by Customer
      * return Product
      */
+
     public Product findProductWhichWasMostOftenSelected() {
-        return customerProductsMap.entrySet().stream().flatMap(f -> f.getValue().stream()).collect(Collectors.groupingBy(g -> g))
+        return customerProductsMap.entrySet().stream()
+                .flatMap(f -> f.getValue().stream())
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        Product::getQuantity,
+                        Integer::sum,
+                        LinkedHashMap::new
+                ))
                 .entrySet()
                 .stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        e -> e.getValue().size()
-                )).entrySet()
-                .stream()
-                .max(Comparator.comparing(Map.Entry::getValue)).get().getKey();
-    }
+                .max(Comparator.comparing(Map.Entry::getValue))
+                .get().getKey();
 
+    }
     /**
      * Method return Product which was least often selected by Customer
      * return Product
      */
 
     public Product findProductWhichWasLeastOftenSelected() {
-        return customerProductsMap.entrySet().stream().flatMap(f -> f.getValue().stream()).collect(Collectors.groupingBy(g -> g))
+        return customerProductsMap.entrySet().stream()
+                .flatMap(f -> f.getValue().stream())
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        Product::getQuantity,
+                        Integer::sum,
+                        LinkedHashMap::new
+                ))
                 .entrySet()
                 .stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        e -> e.getValue().size()
-                )).entrySet()
-                .stream()
-                .min(Comparator.comparing(Map.Entry::getValue)).get().getKey();
+                .min(Comparator.comparing(Map.Entry::getValue))
+                .get().getKey();
     }
 
     /**
@@ -245,8 +256,8 @@ public class PurchaseService {
                 .entrySet()
                 .stream()
                 .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        e -> e.getValue().size()
+                        e->e.getKey(),
+                        e ->e.getValue().stream().filter(f->f.equals(e.getKey())).collect(Collectors.toList()).size()
                 ))
                 .entrySet()
                 .stream()
