@@ -12,9 +12,9 @@ public class DataPreferencesGenerator {
 
     private final List<Preference> preferences = List.of(
             new Preference(1, Category.AGD),
-            new Preference(2, Category.ELECTRONICS));
-//            new Preference(3, Category.BOOKS));
-//            new Preference(4, Category.GROCERIES));
+            new Preference(2, Category.ELECTRONICS),
+            new Preference(3, Category.BOOKS),
+            new Preference(4, Category.GROCERIES));
 
 
     public DataPreferencesGenerator() {

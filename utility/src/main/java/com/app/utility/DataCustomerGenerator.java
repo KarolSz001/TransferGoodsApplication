@@ -38,8 +38,8 @@ public class DataCustomerGenerator {
     }
 
     private static int preferencesGenerator() {
-//        String[] preferences = {"12", "21", "13", "31", "23", "32"};
-        String[] preferences = {"12"};
+        String[] preferences = {"12", "13", "23", "24"};
+//        String[] preferences = {"12"};
         int size = preferences.length;
         return Integer.parseInt(preferences[new Random().nextInt(size)]);
     }

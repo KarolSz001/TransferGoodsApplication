@@ -41,19 +41,19 @@ public class ControlService {
     }
 
     private void findResults() {
-        System.out.println("View customer data that purchased the most products");
-        System.out.println(purchaseService.getCustomerHowPurchasedMostProducts());
+        System.out.println("View customer data that purchased the most number of products");
+        System.out.println(purchaseService.findCustomerWithBiggestNumberProducts().getKey() + "::::::::::: number of products -> " + purchaseService.findCustomerWithBiggestNumberProducts().getValue() );
         DataManager.getLine("\n PRESS ANY NUMBER TO CONTINUE");
-        System.out.println("View customer data that has purchased products about Total values");
-        System.out.println(purchaseService.findCustomerHowPurchasedMostProductsWithTotalValue());
+        System.out.println("View customer data that has purchased products with the biggest Total values");
+        System.out.println(purchaseService.findCustomerWithBiggestTotalValuePrice().getKey() + "::::::::::: Total values -> " + purchaseService.findCustomerWithBiggestTotalValuePrice().getValue()) ;
         DataManager.getLine("\n PRESS ANY NUMBER TO CONTINUE");
-        System.out.println("View Map with Product and Number of Them which were selected by customer");
-        purchaseService.getMapWithProductAndNumbersSelectingThem().forEach((k, v) -> System.out.println(k + "::::::::" + v));
+        System.out.println("View Map with Products Name and Numbers of Them which were selected by customer");
+        purchaseService.getMapWithProductsAndNumbersSelectingThem().forEach((k, v) -> System.out.println(k + "::::::::" + v));
         DataManager.getLine("\n PRESS ANY NUMBER TO CONTINUE");
-        System.out.println("Print Product which was most often selected by customer");
+        System.out.println("Print Product Name which was most often selected by customer");
         System.out.println(purchaseService.findProductWhichWasMostOftenSelected());
         DataManager.getLine("\n PRESS ANY NUMBER TO CONTINUE");
-        System.out.println("Print Product which was least often selected by customer");
+        System.out.println("Print Product Name which was least often selected by customer");
         System.out.println(purchaseService.findProductWhichWasLeastOftenSelected());
         DataManager.getLine("\n PRESS ANY NUMBER TO CONTINUE");
         System.out.println("View Map with Category product and count them");

@@ -49,15 +49,15 @@ public class DataProductGenerator {
     private List<Product> createStoreProducts() {
         List<Product> products = new ArrayList<>();
         //BOOKS
-       /* String[] names = new String[]{"BATMAN"};
-        products.addAll(Arrays.stream(names).map(name -> createProduct(name, BOOKS)).collect(Collectors.toList()));*/
+        String[] names = new String[]{"BATMAN"};
+        products.addAll(Arrays.stream(names).map(name -> createProduct(name, BOOKS)).collect(Collectors.toList()));
         //AGD:
-        String[] names = new String[]{"TV"};
+        names = new String[]{"TV"};
         products.addAll(Arrays.stream(names).map(name -> createProduct(name, AGD)).collect(Collectors.toList()));
 
-        /*//GROCERIES
+        //GROCERIES
         names = new String[]{"BANANAS"};
-        products.addAll(Arrays.stream(names).map(name -> createProduct(name, GROCERIES)).collect(Collectors.toList()));*/
+        products.addAll(Arrays.stream(names).map(name -> createProduct(name, GROCERIES)).collect(Collectors.toList()));
         //ELECTRONICS
         names = new String[]{"WATCH"};
         products.addAll(Arrays.stream(names).map(name -> createProduct(name, ELECTRONICS)).collect(Collectors.toList()));

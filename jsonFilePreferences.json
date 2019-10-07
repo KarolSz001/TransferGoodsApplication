@@ -6,5 +6,13 @@
   {
     "priorityNumber": 2,
     "category": "ELECTRONICS"
+  },
+  {
+    "priorityNumber": 3,
+    "category": "BOOKS"
+  },
+  {
+    "priorityNumber": 4,
+    "category": "GROCERIES"
   }
 ]

@@ -43,17 +43,26 @@ public class PurchaseService {
         saveProductsToJsonFile();
         saveCustomerDataToJsonFile();
     }
-    private void printAllUpData(){
-        printAllCustomersAfterOperation();
-        printAllProductsAfterOperation();
+
+    private void printAllUpData() {
+        printAllProductsInStoreAfterOperation();
+        printRecordsOfOperationCustomerWithProducts();
     }
 
-    private void printAllCustomersAfterOperation(){
-        customerService.getAllCustomers().forEach(System.out::println);
-    }
-    private void printAllProductsAfterOperation(){
+    private void printAllProductsInStoreAfterOperation() {
+        System.out.println("\nRecords of Products in Store After Operations");
         productService.findAll().forEach(System.out::println);
     }
+
+    private void printRecordsOfOperationCustomerWithProducts() {
+        System.out.println("\nRecords of Customers with Products after operation");
+        customerProductsMap.forEach((k, v) -> System.out.println(k + "::::::::" + v));
+    }
+
+    /**
+     * Main method for Purchase Operations where all miracles happens
+     * contains -> methods : purchaseProduct(), selectProductFromCategory()
+     */
 
     public void purchaseGoodsByCustomer(Customer customer) {
         count++;
@@ -69,12 +78,18 @@ public class PurchaseService {
         selectedProduct = selectProductFromCategory(customerPrefs, secondCategory);
         System.out.println(selectedProduct);
         purchaseProduct(selectedProduct, customer);
+
         if (count == 2) {
             printAllUpData();
             saveDataToJsonFiles();
             count = 0;
         }
     }
+
+    /**
+     * Private method for main method where products are added to customer, removed from store and cash is calculated
+     * contains -> methods : removeProductFromStore(product, quantityOfTheProduct);
+     */
 
     private void purchaseProduct(Product product, Customer customer) {
         List<Product> products = customerProductsMap.get(customer);
@@ -97,6 +112,7 @@ public class PurchaseService {
         } catch (CloneNotSupportedException e) {
             e.getMessage();
         }
+
         customerProductsMap.replace(customer, products);
         System.out.println(" Payment Accepted ");
         removeProductFromStore(product, quantityOfTheProduct);
@@ -159,18 +175,19 @@ public class PurchaseService {
         return preferenceList.stream().filter(f -> f.getPriorityNumber() == number).findFirst().get().getCategory();
     }
 
+
     /**
+     * /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
      * Method finds Customer in collection how purchased the biggest number of Product
      * return Customer
      */
 
-    public Customer getCustomerHowPurchasedMostProducts() {
+    public Map.Entry<Customer,Integer> findCustomerWithBiggestNumberProducts() {
         return customerProductsMap.entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         e -> e.getValue().stream().map(Product::getQuantity).reduce(0, Integer::sum)
-                ))
-                .entrySet().stream().max(Comparator.comparing(Map.Entry::getValue)).get().getKey();
+                )).entrySet().stream().max(Comparator.comparing(Map.Entry::getValue)).get();
     }
 
     /**
@@ -178,32 +195,30 @@ public class PurchaseService {
      * return Customer
      */
 
-    public Customer findCustomerHowPurchasedMostProductsWithTotalValue() {
+    public Map.Entry<Customer,BigDecimal>  findCustomerWithBiggestTotalValuePrice() {
         return customerProductsMap.entrySet().stream().collect(Collectors.toMap(
                 Map.Entry::getKey,
                 e -> e.getValue().stream().map(m -> m.getPrice().multiply(BigDecimal.valueOf(m.getQuantity()))).reduce(BigDecimal.ZERO, BigDecimal::add)
         ))
                 .entrySet()
                 .stream()
-                .max(Comparator.comparing(Map.Entry::getValue)).get().getKey();
+                .max(Comparator.comparing(Map.Entry::getValue)).get();
     }
 
     /**
-     * Method return Map of products with numbers of selecting them
-     * return Map<Product, Long>
+     * Method return Map of products name  and  numbers of them after operations
+     * return Map<String, Long>
      */
 
-    public Map<Product, Integer> getMapWithProductAndNumbersSelectingThem() {
+    public Map<String, Integer> getMapWithProductsAndNumbersSelectingThem() {
         return customerProductsMap.entrySet().stream()
                 .flatMap(f -> f.getValue().stream())
                 .collect(Collectors.toMap(
-                        Function.identity(),
+                        Product::getName,
                         Product::getQuantity,
                         Integer::sum,
                         LinkedHashMap::new
                 ));
-
-
     }
 
     /**
@@ -211,11 +226,11 @@ public class PurchaseService {
      * return Product
      */
 
-    public Product findProductWhichWasMostOftenSelected() {
+    public String findProductWhichWasMostOftenSelected() {
         return customerProductsMap.entrySet().stream()
                 .flatMap(f -> f.getValue().stream())
                 .collect(Collectors.toMap(
-                        Function.identity(),
+                        Product::getName,
                         Product::getQuantity,
                         Integer::sum,
                         LinkedHashMap::new
@@ -226,16 +241,17 @@ public class PurchaseService {
                 .get().getKey();
 
     }
+
     /**
      * Method return Product which was least often selected by Customer
      * return Product
      */
 
-    public Product findProductWhichWasLeastOftenSelected() {
+    public String findProductWhichWasLeastOftenSelected() {
         return customerProductsMap.entrySet().stream()
                 .flatMap(f -> f.getValue().stream())
                 .collect(Collectors.toMap(
-                        Function.identity(),
+                        Product::getName,
                         Product::getQuantity,
                         Integer::sum,
                         LinkedHashMap::new
@@ -252,16 +268,16 @@ public class PurchaseService {
      */
 
     public Map<Category, Integer> findMapWithCategoryAndNumberOfThem() {
-        return customerProductsMap.entrySet().stream().flatMap(f -> f.getValue().stream()).map(Product::getCategory).collect(Collectors.groupingBy(g -> g))
+        return customerProductsMap.entrySet().stream()
+                .flatMap(f -> f.getValue().stream())
+                .collect(Collectors.groupingBy(Function.identity()))
                 .entrySet()
                 .stream()
                 .collect(Collectors.toMap(
-                        e->e.getKey(),
-                        e ->e.getValue().stream().filter(f->f.equals(e.getKey())).collect(Collectors.toList()).size()
-                ))
-                .entrySet()
-                .stream()
-                .sorted(Comparator.comparing(Map.Entry::getValue))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Integer::sum, HashMap::new));
+                        e->e.getKey().getCategory(),
+                        e->e.getValue().stream().filter(f->f.getCategory().equals(e.getKey().getCategory())).map(Product::getQuantity).reduce(0,Integer::sum),
+                        Integer::sum,
+                        LinkedHashMap::new
+                ));
     }
 }
