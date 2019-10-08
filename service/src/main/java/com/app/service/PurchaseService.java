@@ -16,7 +16,7 @@ public class PurchaseService {
 
     private final Integer firstCategory = 0;
     private final Integer secondCategory = 1;
-    private final ProductService productService = new ProductService();
+    private final ProductService productService = new ProductService("jsonProductFile.json");
     private final CustomerService customerService = new CustomerService();
     private final Map<Customer, List<Product>> customerProductsMap = new HashMap<>();
     private int count = 0;

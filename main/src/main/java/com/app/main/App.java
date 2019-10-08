@@ -9,6 +9,4 @@ public class App {
         ControlService controlService = new ControlService();
         controlService.controlRun();
     }
-
-
 }

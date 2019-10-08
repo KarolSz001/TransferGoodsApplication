@@ -70,8 +70,5 @@ public class DataCustomerGenerator {
             customers.add(customerGenerator());
         }
         return customers;
-
     }
-
-
 }
