@@ -1,5 +1,6 @@
 package com.app.service;
 
+import com.app.model.Preference;
 import com.app.utility.DataCustomerGenerator;
 import com.app.utility.DataManager;
 import com.app.utility.DataPreferencesGenerator;
@@ -15,11 +16,15 @@ public class ControlService {
     private DataPreferencesGenerator dataPreferencesGenerator;
     private final PurchaseService purchaseService;
     private final CustomerService customerService;
+    private final PreferenceService preferenceService;
+    private final String customerFileName = "jsonCustomer.json";
+    private final String preferencesFileName = "jsonCustomer.json";
 
 
     public ControlService() {
         initialisationData();
-        customerService = new CustomerService();
+        customerService = new CustomerService(customerFileName);
+        preferenceService = new PreferenceService(preferencesFileName);
         purchaseService = new PurchaseService();
     }
 
@@ -33,11 +38,11 @@ public class ControlService {
 
     private void printDataFromJsonFiles() {
         System.out.println("\n>>>>>>>>>> CUSTOMERS DATA >>>>>>>>>>");
-        customerService.getAllCustomers().forEach(System.out::println);
+        customerService.findAll().forEach(System.out::println);
         System.out.println("\n>>>>>>>>>> PRODUCTS DATA >>>>>>>>>>");
         purchaseService.getProductService().findAll().forEach(System.out::println);
         System.out.println("\n>>>>>>>>>> PREFERENCES DATA >>>>>>>>>>");
-        customerService.getPreferences().forEach(System.out::println);
+        preferenceService.findAll().forEach(System.out::println);
     }
 
     private void findResults() {
@@ -61,7 +66,7 @@ public class ControlService {
     }
 
     private void purchaseOperation() {
-        customerService.getAllCustomers().stream().peek(purchaseService::purchaseGoodsByCustomer).collect(Collectors.toList());
+        customerService.findAll().stream().peek(purchaseService::purchaseGoodsByCustomer).collect(Collectors.toList());
     }
 
     private void initialisationData() {

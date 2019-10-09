@@ -11,30 +11,27 @@ import java.util.List;
 public class CustomerService {
 
     private final List<Customer> customers;
-    private final List<Preference> preferences;
-    private final String jsonCustomerFile = "jsonCustomer.json";
-    private final String jsonPreferenceFile = "jsonFilePreferences.json";
-    private final CutomerToJsonConverter cutomerToJsonConverter = new CutomerToJsonConverter(jsonCustomerFile);
-    private final PreferencesToJsonConverter preferencesToJsonConverter = new PreferencesToJsonConverter(jsonPreferenceFile);
+    private final CutomerToJsonConverter cutomerToJsonConverter;
 
-    public CustomerService() {
+    public CustomerService(String fileName) {
+        cutomerToJsonConverter = new CutomerToJsonConverter(fileName);
         customers = loadCustomersFromJsonFile();
-        preferences = loadPreferencesFromJsonFile();
     }
 
-    public List<Customer> loadCustomersFromJsonFile(){
-        return cutomerToJsonConverter.fromJson().orElseThrow(()-> new MyUncheckedException("LOAD CUSTOMER ERROR"));
+    public List<Customer> loadCustomersFromJsonFile() {
+        return cutomerToJsonConverter.fromJson().orElseThrow(() -> new MyUncheckedException("LOAD CUSTOMER ERROR"));
     }
-    public List<Preference> loadPreferencesFromJsonFile(){
-        return preferencesToJsonConverter.fromJson().orElseThrow(()-> new MyUncheckedException("LOAD PREFERENCES ERROR"));
-    }
-    public void saveCustomersToJsonFile(){
+
+    public void saveCustomersToJsonFile() {
         cutomerToJsonConverter.toJson(customers);
     }
 
-    public List<Customer> getAllCustomers(){
+    public List<Customer> findAll() {
         return customers;
     }
 
-    public List<Preference> getPreferences(){return preferences;}
+    public int findNumberOfCustomers(){
+        return customers.size();
+    }
+
 }

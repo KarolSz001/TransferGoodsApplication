@@ -16,7 +16,6 @@ public class ProductService {
         jsonProductFile = fileName;
         productToJsonConverter = new ProductToJsonConverter(jsonProductFile);
         products = loadProductsFromJsonFile();
-
     }
 
     public ProductService() {

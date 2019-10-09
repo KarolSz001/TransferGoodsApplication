@@ -17,7 +17,8 @@ public class PurchaseService {
     private final Integer firstCategory = 0;
     private final Integer secondCategory = 1;
     private final ProductService productService = new ProductService("jsonProductFile.json");
-    private final CustomerService customerService = new CustomerService();
+    private final CustomerService customerService = new CustomerService("jsonCustomer.json");
+    private final PreferenceService preferenceService = new PreferenceService("jsonFilePreferences.json");
     private final Map<Customer, List<Product>> customerProductsMap = new HashMap<>();
     private int count = 0;
 
@@ -117,7 +118,7 @@ public class PurchaseService {
         System.out.println(" Payment Accepted ");
         removeProductFromStore(product, quantityOfTheProduct);
         customerProductsMap.entrySet().stream().filter(f -> f.getKey().equals(customer)).findFirst().get().getKey().setCash(rest);
-        customerService.getAllCustomers().stream().filter(f -> f.equals(customer)).findFirst().get().setCash(rest);// for save file with update
+        customerService.findAll().stream().filter(f -> f.equals(customer)).findFirst().get().setCash(rest);// for save file with update
         System.out.println("\n UPDATE CUSTOMER DATA ---->>>>" + customerProductsMap.entrySet().stream().filter(f -> f.getKey().equals(customer)).collect(Collectors.toList()));
     }
 
@@ -171,7 +172,7 @@ public class PurchaseService {
     }
 
     private Category getCategoryFromInt(Integer number) {
-        List<Preference> preferenceList = customerService.getPreferences();
+        List<Preference> preferenceList = preferenceService.findAll();
         return preferenceList.stream().filter(f -> f.getPriorityNumber() == number).findFirst().get().getCategory();
     }
 

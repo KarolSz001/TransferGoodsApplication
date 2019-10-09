@@ -3,7 +3,6 @@ package com.app.service.test;
 
 import com.app.enums.Category;
 import com.app.exception.MyUncheckedException;
-import com.app.model.Customer;
 import com.app.model.Product;
 import com.app.service.ProductService;
 import org.junit.jupiter.api.Assertions;
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -31,17 +29,12 @@ public class TestProductServices {
     ProductService productService = new ProductService(testProductFileName);
 
 
-
-
-
-
     @Test
     @DisplayName("Test -> shouldThrowExceptionForWrongJsonProductFileName")
     public void shouldThrowExceptionForWrongJsonProductFileName() {
 
         MyUncheckedException e = Assertions.assertThrows(MyUncheckedException.class, () -> new ProductService(testProductWrongFileName));
         Assertions.assertEquals("FROM JSON - JSON FILENAME EXCEPTION", e.getMessage());
-
     }
 
     @Test
