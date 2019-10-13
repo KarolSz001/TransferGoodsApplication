@@ -1,6 +1,6 @@
 package com.app.utility;
 
-import com.app.converter.CutomerToJsonConverter;
+import com.app.converter.CustomerToJsonConverter;
 import com.app.model.Customer;
 
 import java.math.BigDecimal;
@@ -24,8 +24,8 @@ public class DataCustomerGenerator {
     }
 
     private void saveCustomerToJsonFile() {
-        CutomerToJsonConverter cutomerToJsonConverter = new CutomerToJsonConverter(fileName);
-        cutomerToJsonConverter.toJson(customers);
+        CustomerToJsonConverter customerToJsonConverter = new CustomerToJsonConverter(fileName);
+        customerToJsonConverter.toJson(customers);
     }
 
     public static Customer customerGenerator() {

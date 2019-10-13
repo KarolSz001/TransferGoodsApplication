@@ -17,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 
-
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -62,11 +61,9 @@ public class TestPreferencesService {
     @Test
     @DisplayName("Test test mock customerServiceMock")
     public void mockProductService() {
-
         customerServiceMock.findNumbersOfProducts();
         Mockito.verify(customerServiceMock).findNumbersOfProducts();
         Mockito.when(customerServiceMock.findNumbersOfProducts()).thenReturn(100);
         Assertions.assertEquals(100, customerServiceMock.findNumbersOfProducts());
     }
-
 }

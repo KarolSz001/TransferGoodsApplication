@@ -1,26 +1,26 @@
 [
   {
     "name": "BATMAN",
-    "quantity": 27,
-    "price": 128,
+    "quantity": 20,
+    "price": 229,
     "category": "BOOKS"
   },
   {
     "name": "TV",
-    "quantity": 19,
-    "price": 182,
+    "quantity": 86,
+    "price": 57,
     "category": "AGD"
   },
   {
     "name": "BANANAS",
-    "quantity": 54,
-    "price": 211,
+    "quantity": 61,
+    "price": 143,
     "category": "GROCERIES"
   },
   {
     "name": "WATCH",
-    "quantity": 76,
-    "price": 23,
+    "quantity": 65,
+    "price": 154,
     "category": "ELECTRONICS"
   }
 ]

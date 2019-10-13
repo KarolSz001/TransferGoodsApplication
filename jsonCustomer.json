@@ -1,23 +1,16 @@
 [
   {
-    "name": "ANNA",
-    "surname": "SUCHAR",
-    "age": 34,
-    "preferences": 12,
-    "cash": 8607
-  },
-  {
     "name": "KAROL",
-    "surname": "ROGAL",
-    "age": 78,
-    "preferences": 12,
-    "cash": 5115
+    "surname": "KONAR",
+    "age": 82,
+    "preferences": 24,
+    "cash": 3370
   },
   {
-    "name": "ANNA",
-    "surname": "KOWAL",
-    "age": 96,
+    "name": "ZOFIA",
+    "surname": "KONAR",
+    "age": 55,
     "preferences": 24,
-    "cash": 3898
+    "cash": 2772
   }
 ]

@@ -1,0 +1,30 @@
+{
+  "ZOFIA KOWAL": [
+    {
+      "name": "WATCH",
+      "quantity": 3,
+      "price": 218,
+      "category": "ELECTRONICS"
+    },
+    {
+      "name": "BATMAN",
+      "quantity": 10,
+      "price": 19,
+      "category": "BOOKS"
+    }
+  ],
+  "ANNA KOWAL": [
+    {
+      "name": "WATCH",
+      "quantity": 2,
+      "price": 218,
+      "category": "ELECTRONICS"
+    },
+    {
+      "name": "BATMAN",
+      "quantity": 7,
+      "price": 19,
+      "category": "BOOKS"
+    }
+  ]
+}

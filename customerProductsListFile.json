@@ -1,0 +1,48 @@
+[
+  {
+    "customer": {
+      "name": "ANNA",
+      "surname": "KONAR",
+      "age": 31,
+      "preferences": 13,
+      "cash": 2020
+    },
+    "productList": [
+      {
+        "name": "TV",
+        "quantity": 1,
+        "price": 54,
+        "category": "AGD"
+      },
+      {
+        "name": "BATMAN",
+        "quantity": 4,
+        "price": 77,
+        "category": "BOOKS"
+      }
+    ]
+  },
+  {
+    "customer": {
+      "name": "TOMASZ",
+      "surname": "SUCHAR",
+      "age": 15,
+      "preferences": 23,
+      "cash": 1516
+    },
+    "productList": [
+      {
+        "name": "WATCH",
+        "quantity": 12,
+        "price": 271,
+        "category": "ELECTRONICS"
+      },
+      {
+        "name": "BATMAN",
+        "quantity": 1,
+        "price": 77,
+        "category": "BOOKS"
+      }
+    ]
+  }
+]

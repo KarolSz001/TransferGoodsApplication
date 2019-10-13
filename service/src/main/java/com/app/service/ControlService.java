@@ -18,14 +18,15 @@ public class ControlService {
     private final CustomerService customerService;
     private final PreferenceService preferenceService;
     private final String customerFileName = "jsonCustomer.json";
-    private final String preferencesFileName = "jsonCustomer.json";
+    private final String preferencesFileName = "jsonFilePreferences.json";
+    private final String productsFileName = "jsonProductFile.json";
 
 
     public ControlService() {
         initialisationData();
         customerService = new CustomerService(customerFileName);
         preferenceService = new PreferenceService(preferencesFileName);
-        purchaseService = new PurchaseService();
+        purchaseService = new PurchaseService(productsFileName,customerFileName,preferencesFileName);
     }
 
     public void controlRun() {

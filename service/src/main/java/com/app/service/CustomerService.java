@@ -1,29 +1,27 @@
 package com.app.service;
 
-import com.app.converter.CutomerToJsonConverter;
-import com.app.converter.PreferencesToJsonConverter;
+import com.app.converter.CustomerToJsonConverter;
 import com.app.exception.MyUncheckedException;
 import com.app.model.Customer;
-import com.app.model.Preference;
 
 import java.util.List;
 
 public class CustomerService {
 
     private final List<Customer> customers;
-    private final CutomerToJsonConverter cutomerToJsonConverter;
+    private final CustomerToJsonConverter customerToJsonConverter;
 
     public CustomerService(String fileName) {
-        cutomerToJsonConverter = new CutomerToJsonConverter(fileName);
+        customerToJsonConverter = new CustomerToJsonConverter(fileName);
         customers = loadCustomersFromJsonFile();
     }
 
     public List<Customer> loadCustomersFromJsonFile() {
-        return cutomerToJsonConverter.fromJson().orElseThrow(() -> new MyUncheckedException("LOAD CUSTOMER ERROR"));
+        return customerToJsonConverter.fromJson().orElseThrow(() -> new MyUncheckedException("LOAD CUSTOMER ERROR"));
     }
 
     public void saveCustomersToJsonFile() {
-        cutomerToJsonConverter.toJson(customers);
+        customerToJsonConverter.toJson(customers);
     }
 
     public List<Customer> findAll() {

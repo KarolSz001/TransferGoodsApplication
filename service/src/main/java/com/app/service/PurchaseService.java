@@ -1,8 +1,11 @@
 package com.app.service;
 
+import com.app.converter.CustomerAndProductsJsonConverter;
+import com.app.converter.CustomerWithProductsJsonConverter;
 import com.app.enums.Category;
 import com.app.exception.MyUncheckedException;
 import com.app.model.Customer;
+import com.app.model.CustomerWithProducts;
 import com.app.model.Preference;
 import com.app.model.Product;
 import com.app.utility.DataManager;
@@ -16,19 +19,61 @@ public class PurchaseService {
 
     private final Integer firstCategory = 0;
     private final Integer secondCategory = 1;
-    private final ProductService productService = new ProductService("jsonProductFile.json");
-    private final CustomerService customerService = new CustomerService("jsonCustomer.json");
-    private final PreferenceService preferenceService = new PreferenceService("jsonFilePreferences.json");
-    private final Map<Customer, List<Product>> customerProductsMap = new HashMap<>();
+    private ProductService productService;
+    private CustomerService customerService;
+    private PreferenceService preferenceService;
+    private  Map<Customer, List<Product>> customerProductsMap = new HashMap<>();
     private int count = 0;
+    private String customerAndProductsFile = "customerAndProductsFile.json";
+    private CustomerAndProductsJsonConverter customerAndProductsJsonConverter = new CustomerAndProductsJsonConverter(customerAndProductsFile);
 
-    public PurchaseService() {
+
+    /**
+     * json format doesn't convert correctly key as object Customer, to fix this
+     * I changed structure to Map<String,List<Product> from previous List<CustomerWithProducts></>
+     * */
+    private String customerProductsListFile = "customerProductsListFile.json";
+    private CustomerWithProductsJsonConverter customerProductsListConverter = new CustomerWithProductsJsonConverter(customerProductsListFile);
+
+
+
+    public PurchaseService(String... fileNames) {
+        productService = new ProductService(fileNames[0]);
+        customerService = new CustomerService(fileNames[1]);
+        preferenceService = new PreferenceService(fileNames[2]);
         customerService.loadCustomersFromJsonFile();
         productService.loadProductsFromJsonFile();
     }
 
+
+    public void setCustomerProductsMap(Map<Customer, List<Product>> customerProductsMap) {
+        this.customerProductsMap = customerProductsMap;
+    }
+
     public ProductService getProductService() {
         return productService;
+    }
+
+
+    private void saveDataToJsonFiles() {
+        System.out.println("\n:::::::::::::::: SAVE FILES ::::::::::::::::::::::");
+        saveProductsToJsonFile();
+        saveCustomerDataToJsonFile();
+        saveCustomerProductsRecords();
+    }
+
+    private List<CustomerWithProducts> convertCustomerProductsMapToList() {
+        return customerProductsMap.entrySet().stream().map(this::convertFromEntrySetMap).collect(Collectors.toList());
+    }
+
+    public Map<Customer, List<Product>> convertListCustomerWithProductToMap(List<CustomerWithProducts> customerWithProductsList){
+        return customerWithProductsList.stream().collect(Collectors.toMap(
+                CustomerWithProducts::getCustomer,
+                CustomerWithProducts::getProductList
+        ));
+    }
+    private CustomerWithProducts convertFromEntrySetMap(Map.Entry<Customer,List<Product>> customerWithProduct){
+        return CustomerWithProducts.builder().customer(customerWithProduct.getKey()).productList(customerWithProduct.getValue()).build();
     }
 
     private void saveProductsToJsonFile() {
@@ -39,11 +84,22 @@ public class PurchaseService {
         customerService.saveCustomersToJsonFile();
     }
 
-    private void saveDataToJsonFiles() {
-        System.out.println("\n:::::::::::::::: SAVE FILES ::::::::::::::::::::::");
-        saveProductsToJsonFile();
-        saveCustomerDataToJsonFile();
+    private void saveCustomerProductsRecords() {
+        Map<String, List<Product>> customers = convertKeyCustomerKeyToString();
+        customerAndProductsJsonConverter.toJson(customerProductsMap);
+        List<CustomerWithProducts> customerWithProductsList = convertCustomerProductsMapToList();
+        customerProductsListConverter.toJson(customerWithProductsList);
     }
+
+    private Map<String, List<Product>> convertKeyCustomerKeyToString() {
+        return customerProductsMap.entrySet().stream()
+                .collect(Collectors.toMap(
+                        e -> e.getKey().getName() + " " + e.getKey().getSurname(),
+                        Map.Entry::getValue
+                ));
+    }
+
+
 
     private void printAllUpData() {
         printAllProductsInStoreAfterOperation();
@@ -54,6 +110,7 @@ public class PurchaseService {
         System.out.println("\nRecords of Products in Store After Operations");
         productService.findAll().forEach(System.out::println);
     }
+
 
     private void printRecordsOfOperationCustomerWithProducts() {
         System.out.println("\nRecords of Customers with Products after operation");
@@ -183,7 +240,7 @@ public class PurchaseService {
      * return Customer
      */
 
-    public Map.Entry<Customer,Integer> findCustomerWithBiggestNumberProducts() {
+    public Map.Entry<Customer, Integer> findCustomerWithBiggestNumberProducts() {
         return customerProductsMap.entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
@@ -196,7 +253,7 @@ public class PurchaseService {
      * return Customer
      */
 
-    public Map.Entry<Customer,BigDecimal>  findCustomerWithBiggestTotalValuePrice() {
+    public Map.Entry<Customer, BigDecimal> findCustomerWithBiggestTotalValuePrice() {
         return customerProductsMap.entrySet().stream().collect(Collectors.toMap(
                 Map.Entry::getKey,
                 e -> e.getValue().stream().map(m -> m.getPrice().multiply(BigDecimal.valueOf(m.getQuantity()))).reduce(BigDecimal.ZERO, BigDecimal::add)
@@ -275,8 +332,8 @@ public class PurchaseService {
                 .entrySet()
                 .stream()
                 .collect(Collectors.toMap(
-                        e->e.getKey().getCategory(),
-                        e->e.getValue().stream().filter(f->f.getCategory().equals(e.getKey().getCategory())).map(Product::getQuantity).reduce(0,Integer::sum),
+                        e -> e.getKey().getCategory(),
+                        e -> e.getValue().stream().filter(f -> f.getCategory().equals(e.getKey().getCategory())).map(Product::getQuantity).reduce(0, Integer::sum),
                         Integer::sum,
                         LinkedHashMap::new
                 ));
