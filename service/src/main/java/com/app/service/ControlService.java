@@ -19,14 +19,14 @@ public class ControlService {
     private final PreferenceService preferenceService;
     private final String customerFileName = "jsonCustomer.json";
     private final String preferencesFileName = "jsonFilePreferences.json";
-    private final String productsFileName = "jsonProductFile.json";
+
 
 
     public ControlService() {
         initialisationData();
         customerService = new CustomerService(customerFileName);
         preferenceService = new PreferenceService(preferencesFileName);
-        purchaseService = new PurchaseService(productsFileName,customerFileName,preferencesFileName);
+        purchaseService = new PurchaseService();
     }
 
     public void controlRun() {
@@ -34,7 +34,6 @@ public class ControlService {
         purchaseOperation();
         findResults();
     }
-
 
 
     private void printDataFromJsonFiles() {
@@ -48,10 +47,10 @@ public class ControlService {
 
     private void findResults() {
         System.out.println("View customer data that purchased the most number of products");
-        System.out.println(purchaseService.findCustomerWithBiggestNumberProducts().getKey() + "::::::::::: number of products -> " + purchaseService.findCustomerWithBiggestNumberProducts().getValue() );
+        System.out.println(purchaseService.findCustomerWithBiggestNumberProducts().getKey() + "::::::::::: number of products -> " + purchaseService.findCustomerWithBiggestNumberProducts().getValue());
         DataManager.getLine("\n PRESS ANY NUMBER TO CONTINUE");
         System.out.println("View customer data that has purchased products with the biggest Total values");
-        System.out.println(purchaseService.findCustomerWithBiggestTotalValuePrice().getKey() + "::::::::::: Total values -> " + purchaseService.findCustomerWithBiggestTotalValuePrice().getValue()) ;
+        System.out.println(purchaseService.findCustomerWithBiggestTotalValuePrice().getKey() + "::::::::::: Total values -> " + purchaseService.findCustomerWithBiggestTotalValuePrice().getValue());
         DataManager.getLine("\n PRESS ANY NUMBER TO CONTINUE");
         System.out.println("View Map with Products Name and Numbers of Them which were selected by customer");
         purchaseService.getMapWithProductsAndNumbersSelectingThem().forEach((k, v) -> System.out.println(k + "::::::::" + v));

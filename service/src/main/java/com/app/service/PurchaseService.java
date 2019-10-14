@@ -22,22 +22,20 @@ public class PurchaseService {
     private ProductService productService;
     private CustomerService customerService;
     private PreferenceService preferenceService;
-    private  Map<Customer, List<Product>> customerProductsMap = new HashMap<>();
+    private Map<Customer, List<Product>> customerProductsMap = new HashMap<>();
     private int count = 0;
     private String customerAndProductsFile = "customerAndProductsFile.json";
+    private String[] fileNames = {"jsonCustomer.json", "jsonProductFile.json", "jsonFilePreferences.json"};
     private CustomerAndProductsJsonConverter customerAndProductsJsonConverter = new CustomerAndProductsJsonConverter(customerAndProductsFile);
-
-
     /**
      * json format doesn't convert correctly key as object Customer, to fix this
      * I changed structure to Map<String,List<Product> from previous List<CustomerWithProducts></>
-     * */
+     */
     private String customerProductsListFile = "customerProductsListFile.json";
     private CustomerWithProductsJsonConverter customerProductsListConverter = new CustomerWithProductsJsonConverter(customerProductsListFile);
 
 
-
-    public PurchaseService(String... fileNames) {
+    public PurchaseService() {
         productService = new ProductService(fileNames[0]);
         customerService = new CustomerService(fileNames[1]);
         preferenceService = new PreferenceService(fileNames[2]);
@@ -46,8 +44,13 @@ public class PurchaseService {
     }
 
 
+
     public void setCustomerProductsMap(Map<Customer, List<Product>> customerProductsMap) {
         this.customerProductsMap = customerProductsMap;
+    }
+
+    public Map<Customer, List<Product>> getCustomerProductsMap() {
+        return customerProductsMap;
     }
 
     public ProductService getProductService() {
@@ -66,13 +69,20 @@ public class PurchaseService {
         return customerProductsMap.entrySet().stream().map(this::convertFromEntrySetMap).collect(Collectors.toList());
     }
 
-    public Map<Customer, List<Product>> convertListCustomerWithProductToMap(List<CustomerWithProducts> customerWithProductsList){
+    public Map<Customer, List<Product>> convertListCustomerWithProductToMap(List<CustomerWithProducts> customerWithProductsList) {
+        if (customerWithProductsList == null) {
+            throw new MyUncheckedException("Arg is null in purchaseGoodsByCustomer method ");
+        }
         return customerWithProductsList.stream().collect(Collectors.toMap(
                 CustomerWithProducts::getCustomer,
                 CustomerWithProducts::getProductList
         ));
     }
-    private CustomerWithProducts convertFromEntrySetMap(Map.Entry<Customer,List<Product>> customerWithProduct){
+
+    private CustomerWithProducts convertFromEntrySetMap(Map.Entry<Customer, List<Product>> customerWithProduct) {
+        if (customerWithProduct == null) {
+            throw new MyUncheckedException("Arg is null in convertFromEntrySetMap method ");
+        }
         return CustomerWithProducts.builder().customer(customerWithProduct.getKey()).productList(customerWithProduct.getValue()).build();
     }
 
@@ -85,20 +95,10 @@ public class PurchaseService {
     }
 
     private void saveCustomerProductsRecords() {
-        Map<String, List<Product>> customers = convertKeyCustomerKeyToString();
         customerAndProductsJsonConverter.toJson(customerProductsMap);
         List<CustomerWithProducts> customerWithProductsList = convertCustomerProductsMapToList();
         customerProductsListConverter.toJson(customerWithProductsList);
     }
-
-    private Map<String, List<Product>> convertKeyCustomerKeyToString() {
-        return customerProductsMap.entrySet().stream()
-                .collect(Collectors.toMap(
-                        e -> e.getKey().getName() + " " + e.getKey().getSurname(),
-                        Map.Entry::getValue
-                ));
-    }
-
 
 
     private void printAllUpData() {
@@ -123,6 +123,11 @@ public class PurchaseService {
      */
 
     public void purchaseGoodsByCustomer(Customer customer) {
+
+        if (customer == null) {
+            throw new MyUncheckedException("Arg is null in purchaseGoodsByCustomer method ");
+        }
+
         count++;
         System.out.println("------------------------------------------------------------------------------------------");
         List<Category> customerPrefs = getCustomerPrefCategories(customer);
@@ -132,11 +137,15 @@ public class PurchaseService {
         Product selectedProduct = selectProductFromCategory(customerPrefs, firstCategory);
         System.out.println(selectedProduct);
         customerProductsMap.put(customer, new ArrayList<>());
-        purchaseProduct(selectedProduct, customer);
-        selectedProduct = selectProductFromCategory(customerPrefs, secondCategory);
-        System.out.println(selectedProduct);
-        purchaseProduct(selectedProduct, customer);
-
+        try {
+            purchaseProduct(selectedProduct, customer);
+            selectedProduct = selectProductFromCategory(customerPrefs, secondCategory);
+            System.out.println(selectedProduct);
+            purchaseProduct(selectedProduct, customer);
+        } catch (MyUncheckedException e) {
+            e.getMessage();
+            e.printStackTrace();
+        }
         if (count == 2) {
             printAllUpData();
             saveDataToJsonFiles();
@@ -150,6 +159,9 @@ public class PurchaseService {
      */
 
     private void purchaseProduct(Product product, Customer customer) {
+        if (product == null || customer == null) {
+            throw new MyUncheckedException("Arg is null in purchaseProduct method ");
+        }
         List<Product> products = customerProductsMap.get(customer);
         int quantityOfTheProduct = DataManager.getInt2("\n >>>>>>>>>> PRESS NUMBER OF PRODUCT YOU WANNA BUY <<<<<<<< ");
         BigDecimal totalPriceOfBuyingProduct = product.getPrice().multiply(new BigDecimal(quantityOfTheProduct));
@@ -180,20 +192,38 @@ public class PurchaseService {
     }
 
     private void printProductsInStoreByCustomerPreferences(List<Category> categories) {
+        if (categories == null) {
+            throw new MyUncheckedException("Arg is null in printProductsInStoreByCustomerPreferences method");
+        }
         System.out.println("\n >>>>>>>>>> AVAILABLE PRODUCT FOR YOU PREFERENCES >>>>>>>>>> ");
         getProductFromCustomerPreferences(categories).forEach(System.out::println);
     }
 
     private Product selectProductFromCategory(List<Category> categories, int categoryNumber) {
+        if (categories == null) {
+            throw new MyUncheckedException("Arg is null in printProductsInStoreByCustomerPreferences method");
+        }
+        if (categoryNumber < 0) {
+            throw new MyUncheckedException("Arg is VALID in printProductsInStoreByCustomerPreferences method");
+        }
         System.out.println("\n>>>>>>>>>>AUTO SELECTED PRODUCT BY NUMBER " + (categoryNumber + 1) + " CATEGORY -->>RATIO PRICE/QUANTITY <<<<--- " + categories.get(categoryNumber));
         return getListFromCategory(categories.get(categoryNumber)).stream().max(Comparator.comparing(c -> c.getPrice().subtract(BigDecimal.valueOf(c.getQuantity())))).get();
     }
 
     private BigDecimal calcRestOfMoney(BigDecimal productPrice, BigDecimal customerMoney) {
+        if (productPrice == null || customerMoney == null) {
+            throw new MyUncheckedException("Arg is null in calcRestOfMoney method");
+        }
         return customerMoney.subtract(productPrice);
     }
 
     private void removeProductFromStore(Product product, int number) {
+        if (product == null) {
+            throw new MyUncheckedException("Arg is null in removeProductFromStore method");
+        }
+        if (number < 0) {
+            throw new MyUncheckedException("Arg is VALID in removeProductFromStore method");
+        }
         List<Product> productsInStore = productService.findAll();
         if (!productsInStore.contains(product)) {
             throw new MyUncheckedException("NO SUCH PRODUCT IN STORE");
@@ -207,6 +237,9 @@ public class PurchaseService {
     }
 
     private List<Product> getProductFromCustomerPreferences(List<Category> preferences) {
+        if (preferences == null) {
+            throw new MyUncheckedException("Arg is null in getProductFromCustomerPreferences method");
+        }
         List<Product> filteredListByPreference = new ArrayList<>();
         for (Category cat : preferences) {
             filteredListByPreference.addAll(getListFromCategory(cat));
@@ -215,16 +248,25 @@ public class PurchaseService {
     }
 
     private List<Product> getListFromCategory(Category category) {
+        if (category == null) {
+            throw new MyUncheckedException("Arg is null in getListFromCategory method");
+        }
         return productService.findAll().stream().filter(f -> f.getCategory().equals(category)).collect(Collectors.toList());
     }
 
     private List<Category> getCustomerPrefCategories(Customer customer) {
+        if (customer == null) {
+            throw new MyUncheckedException("Arg is null in getCustomerPrefCategories method");
+        }
         int prefNumbers = customer.getPreferences();
         List<Integer> prefList = getListOfIntegerFromNumber(prefNumbers);
         return prefList.stream().map(this::getCategoryFromInt).collect(Collectors.toList());
     }
 
     private List<Integer> getListOfIntegerFromNumber(int prefNumbers) {
+        if (prefNumbers < 0) {
+            throw new MyUncheckedException("Arg is VALID in getListOfIntegerFromNumber method");
+        }
         return Arrays.stream(Integer.toString(prefNumbers).split("")).map(Integer::valueOf).collect(Collectors.toList());
     }
 
@@ -233,13 +275,11 @@ public class PurchaseService {
         return preferenceList.stream().filter(f -> f.getPriorityNumber() == number).findFirst().get().getCategory();
     }
 
-
     /**
-     * /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     * ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
      * Method finds Customer in collection how purchased the biggest number of Product
      * return Customer
      */
-
     public Map.Entry<Customer, Integer> findCustomerWithBiggestNumberProducts() {
         return customerProductsMap.entrySet().stream()
                 .collect(Collectors.toMap(
@@ -297,7 +337,6 @@ public class PurchaseService {
                 .stream()
                 .max(Comparator.comparing(Map.Entry::getValue))
                 .get().getKey();
-
     }
 
     /**
@@ -324,7 +363,6 @@ public class PurchaseService {
      * Method return Map with name of category and number of product with this category sorted by this number
      * return Map<Category, Integer>
      */
-
     public Map<Category, Integer> findMapWithCategoryAndNumberOfThem() {
         return customerProductsMap.entrySet().stream()
                 .flatMap(f -> f.getValue().stream())
@@ -338,4 +376,6 @@ public class PurchaseService {
                         LinkedHashMap::new
                 ));
     }
+
+
 }
