@@ -44,7 +44,6 @@ public class PurchaseService {
     }
 
 
-
     public void setCustomerProductsMap(Map<Customer, List<Product>> customerProductsMap) {
         this.customerProductsMap = customerProductsMap;
     }
@@ -158,7 +157,7 @@ public class PurchaseService {
      * contains -> methods : removeProductFromStore(product, quantityOfTheProduct);
      */
 
-    private void purchaseProduct(Product product, Customer customer) {
+    private void purchaseProduct(Product product, Customer customer) throws MyUncheckedException  {
         if (product == null || customer == null) {
             throw new MyUncheckedException("Arg is null in purchaseProduct method ");
         }
@@ -191,7 +190,7 @@ public class PurchaseService {
         System.out.println("\n UPDATE CUSTOMER DATA ---->>>>" + customerProductsMap.entrySet().stream().filter(f -> f.getKey().equals(customer)).collect(Collectors.toList()));
     }
 
-    private void printProductsInStoreByCustomerPreferences(List<Category> categories) {
+    private void printProductsInStoreByCustomerPreferences(List<Category> categories) throws MyUncheckedException {
         if (categories == null) {
             throw new MyUncheckedException("Arg is null in printProductsInStoreByCustomerPreferences method");
         }
@@ -199,7 +198,7 @@ public class PurchaseService {
         getProductFromCustomerPreferences(categories).forEach(System.out::println);
     }
 
-    private Product selectProductFromCategory(List<Category> categories, int categoryNumber) {
+    private Product selectProductFromCategory(List<Category> categories, int categoryNumber) throws MyUncheckedException {
         if (categories == null) {
             throw new MyUncheckedException("Arg is null in printProductsInStoreByCustomerPreferences method");
         }
@@ -210,14 +209,14 @@ public class PurchaseService {
         return getListFromCategory(categories.get(categoryNumber)).stream().max(Comparator.comparing(c -> c.getPrice().subtract(BigDecimal.valueOf(c.getQuantity())))).get();
     }
 
-    private BigDecimal calcRestOfMoney(BigDecimal productPrice, BigDecimal customerMoney) {
+    private BigDecimal calcRestOfMoney(BigDecimal productPrice, BigDecimal customerMoney) throws MyUncheckedException {
         if (productPrice == null || customerMoney == null) {
             throw new MyUncheckedException("Arg is null in calcRestOfMoney method");
         }
         return customerMoney.subtract(productPrice);
     }
 
-    private void removeProductFromStore(Product product, int number) {
+    private void removeProductFromStore(Product product, int number) throws MyUncheckedException {
         if (product == null) {
             throw new MyUncheckedException("Arg is null in removeProductFromStore method");
         }
@@ -236,7 +235,7 @@ public class PurchaseService {
         }
     }
 
-    private List<Product> getProductFromCustomerPreferences(List<Category> preferences) {
+    private List<Product> getProductFromCustomerPreferences(List<Category> preferences) throws MyUncheckedException {
         if (preferences == null) {
             throw new MyUncheckedException("Arg is null in getProductFromCustomerPreferences method");
         }
@@ -247,14 +246,14 @@ public class PurchaseService {
         return filteredListByPreference;
     }
 
-    private List<Product> getListFromCategory(Category category) {
+    private List<Product> getListFromCategory(Category category) throws MyUncheckedException {
         if (category == null) {
             throw new MyUncheckedException("Arg is null in getListFromCategory method");
         }
         return productService.findAll().stream().filter(f -> f.getCategory().equals(category)).collect(Collectors.toList());
     }
 
-    private List<Category> getCustomerPrefCategories(Customer customer) {
+    private List<Category> getCustomerPrefCategories(Customer customer) throws MyUncheckedException {
         if (customer == null) {
             throw new MyUncheckedException("Arg is null in getCustomerPrefCategories method");
         }
@@ -263,7 +262,7 @@ public class PurchaseService {
         return prefList.stream().map(this::getCategoryFromInt).collect(Collectors.toList());
     }
 
-    private List<Integer> getListOfIntegerFromNumber(int prefNumbers) {
+    private List<Integer> getListOfIntegerFromNumber(int prefNumbers) throws MyUncheckedException {
         if (prefNumbers < 0) {
             throw new MyUncheckedException("Arg is VALID in getListOfIntegerFromNumber method");
         }

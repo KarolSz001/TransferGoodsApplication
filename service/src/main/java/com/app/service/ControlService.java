@@ -1,5 +1,6 @@
 package com.app.service;
 
+import com.app.exception.MyUncheckedException;
 import com.app.model.Preference;
 import com.app.utility.DataCustomerGenerator;
 import com.app.utility.DataManager;
@@ -19,7 +20,6 @@ public class ControlService {
     private final PreferenceService preferenceService;
     private final String customerFileName = "jsonCustomer.json";
     private final String preferencesFileName = "jsonFilePreferences.json";
-
 
 
     public ControlService() {
@@ -66,7 +66,12 @@ public class ControlService {
     }
 
     private void purchaseOperation() {
-        customerService.findAll().stream().peek(purchaseService::purchaseGoodsByCustomer).collect(Collectors.toList());
+        try {
+            customerService.findAll().stream().peek(purchaseService::purchaseGoodsByCustomer).collect(Collectors.toList());
+        } catch(MyUncheckedException e) {
+            e.printStackTrace();
+            e.getMessage();
+        }
     }
 
     private void initialisationData() {
